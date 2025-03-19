@@ -1,5 +1,9 @@
 import { createRouter, createWebHistory } from 'vue-router';
+import Login from './pages/auth/Login.vue';
+import Register from './pages/auth/Register.vue';
+import Dashboard from './pages/Dashboard.vue';
 import Welcome from './pages/Welcome.vue';
+import { useAuthStore } from './stores/auth';
 
 const appName = import.meta.env.VITE_APP_NAME || 'Laravel';
 
@@ -12,6 +16,32 @@ const routes = [
             title: 'Welcome',
         },
     },
+    {
+        path: '/dashboard',
+        children: [
+            {
+                path: '',
+                name: 'dashboard',
+                component: Dashboard,
+                meta: {
+                    title: 'Dashboard',
+                },
+            },
+            {
+                path: '/login',
+                name: 'dashboard.login',
+                component: Login,
+            },
+            {
+                path: '/register',
+                name: 'dashboard.register',
+                component: Register,
+                meta: {
+                    title: 'Register',
+                },
+            },
+        ],
+    },
 ];
 
 const router = createRouter({
@@ -19,9 +49,19 @@ const router = createRouter({
     routes,
 });
 
-const guestRoutes = [];
+const guestRoutes = ['welcome', 'dashboard.register', 'dashboard.login'];
 
 router.beforeEach(async (to, from) => {
+    const auth = useAuthStore();
+
+    if (!auth.initiated) {
+        await auth.initiate();
+    }
+
+    if (auth.isGuest && !guestRoutes.includes(to.name)) {
+        return { name: 'login' };
+    }
+
     document.title = to.meta?.title ? to.meta.title + ' - ' + appName : appName;
 });
 
