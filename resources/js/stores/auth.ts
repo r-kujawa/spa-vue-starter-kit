@@ -28,7 +28,7 @@ export const useAuthStore = defineStore('auth', {
   actions: {
     initiate() {
       http.get(
-        route('dashboard.user')
+        route('api.user')
       ).then((response) => {
         this.user = response.data.data;
       }).catch((error) => {
