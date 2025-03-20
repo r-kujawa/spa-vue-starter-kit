@@ -1,5 +1,6 @@
 import { defineStore } from 'pinia';
 import http from '../http';
+import { useRouter } from 'vue-router';
 
 interface User {
     id: number;
@@ -12,13 +13,17 @@ interface User {
 
 interface AuthState {
     initiated: boolean;
+    intendedRoute: object;
     user: User | null;
 }
+
+const router = useRouter();
 
 export const useAuthStore = defineStore('auth', {
   state: (): AuthState => {
     return {
       initiated: false,
+      intendedRoute: { name: 'dashboard' },
       user: null,
     };
   },
@@ -27,10 +32,10 @@ export const useAuthStore = defineStore('auth', {
   },
   actions: {
     initiate() {
-      http.get(
+      return http.get(
         route('api.user')
       ).then((response) => {
-        this.user = response.data.data;
+        this.user = response.data;
       }).catch((error) => {
         // ToDo: Handle different errors...
         this.user = null;
@@ -38,19 +43,26 @@ export const useAuthStore = defineStore('auth', {
         this.initiated = true;
       });
     },
+    setIntendedRoute(route: object) {
+        this.intendedRoute = route;
+    },
     login(email: string, password: string, remember: boolean = false) {
-      http.post(route('dashboard.login'), {
+      return http.post(route('dashboard.login'), {
         email: email,
         password: password,
         remember: remember,
       }).then((response) => {
         this.user = response.data;
+
+        router.push(this.intendedRoute);
+
+        this.intendedRoute = { name: 'dashboard' };
       }).catch((error) => {
         // ToDo: Handle error...
       });
     },
     logout() {
-      http.post('dashboard/logout')
+      return http.post('dashboard/logout')
         .then((response) => {
             this.user = null;
         }).catch((error) => {
@@ -58,7 +70,7 @@ export const useAuthStore = defineStore('auth', {
         });
     },
     sendResetPasswordLink(email: string) {
-      http.post('dashboard/forgot-password', {
+      return http.post('dashboard/forgot-password', {
         email: email,
       }).then((response) => {
         // ToDo: Handle response...
@@ -67,7 +79,7 @@ export const useAuthStore = defineStore('auth', {
       });
     },
     resetPassword(token: string, email: string, password: string, passwordConfirmation: string) {
-      http.post('dashboard/reset-password', {
+      return http.post('dashboard/reset-password', {
         token: token,
         email: email,
         password: password,

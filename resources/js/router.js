@@ -49,7 +49,9 @@ const router = createRouter({
     routes,
 });
 
-const guestRoutes = ['welcome', 'dashboard.register', 'dashboard.login'];
+const openRoutes = ['welcome'];
+
+const guestRoutes = ['dashboard.register', 'dashboard.login'];
 
 router.beforeEach(async (to, from) => {
     const auth = useAuthStore();
@@ -58,8 +60,14 @@ router.beforeEach(async (to, from) => {
         await auth.initiate();
     }
 
-    if (auth.isGuest && !guestRoutes.includes(to.name)) {
+    if (auth.isGuest && !guestRoutes.includes(to.name) && !openRoutes.includes(to.name)) {
+        auth.setIntendedRoute(to);
+
         return { name: 'login' };
+    }
+
+    if (auth.isAuthenticated && guestRoutes.includes(to.name)) {
+        return { name: 'dashboard' };
     }
 
     document.title = to.meta?.title ? to.meta.title + ' - ' + appName : appName;
