@@ -6,33 +6,26 @@ import { Checkbox } from '@/components/ui/checkbox';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import AuthBase from '@/layouts/AuthLayout.vue';
-import { Head, useForm } from '@inertiajs/vue3';
+import { useAuthStore } from '@/stores/auth';
 import { LoaderCircle } from 'lucide-vue-next';
+import { ref } from 'vue';
 
-defineProps<{
-    status?: string;
-    canResetPassword: boolean;
-}>();
+const auth = useAuthStore();
 
-const form = useForm({
+const form = ref({
     email: '',
     password: '',
     remember: false,
+    errors: [],
 });
 
 const submit = () => {
-    form.post(route('login'), {
-        onFinish: () => form.reset('password'),
-    });
+    auth.login(form.value.email, form.value.password, form.value.remember);
 };
 </script>
 
 <template>
     <AuthBase title="Log in to your account" description="Enter your email and password below to log in">
-        <div v-if="status" class="mb-4 text-center text-sm font-medium text-green-600">
-            {{ status }}
-        </div>
-
         <form @submit.prevent="submit" class="flex flex-col gap-6">
             <div class="grid gap-6">
                 <div class="grid gap-2">
@@ -42,7 +35,6 @@ const submit = () => {
                         type="email"
                         required
                         autofocus
-                        :tabindex="1"
                         autocomplete="email"
                         v-model="form.email"
                         placeholder="email@example.com"
@@ -53,15 +45,14 @@ const submit = () => {
                 <div class="grid gap-2">
                     <div class="flex items-center justify-between">
                         <Label for="password">Password</Label>
-                        <TextLink v-if="canResetPassword" :href="route('password.request')" class="text-sm" :tabindex="5">
+                        <!-- <TextLink :to="{ name: 'dashboard.resetPassword' }" class="text-sm">
                             Forgot password?
-                        </TextLink>
+                        </TextLink> -->
                     </div>
                     <Input
                         id="password"
                         type="password"
                         required
-                        :tabindex="2"
                         autocomplete="current-password"
                         v-model="form.password"
                         placeholder="Password"
@@ -69,14 +60,14 @@ const submit = () => {
                     <InputError :message="form.errors.password" />
                 </div>
 
-                <div class="flex items-center justify-between" :tabindex="3">
+                <div class="flex items-center justify-between">
                     <Label for="remember" class="flex items-center space-x-3">
-                        <Checkbox id="remember" v-model:checked="form.remember" :tabindex="4" />
+                        <Checkbox id="remember" v-model:checked="form.remember" />
                         <span>Remember me</span>
                     </Label>
                 </div>
 
-                <Button type="submit" class="mt-4 w-full" :tabindex="4" :disabled="form.processing">
+                <Button type="submit" class="mt-4 w-full" :disabled="form.processing">
                     <LoaderCircle v-if="form.processing" class="h-4 w-4 animate-spin" />
                     Log in
                 </Button>
@@ -84,7 +75,7 @@ const submit = () => {
 
             <div class="text-center text-sm text-muted-foreground">
                 Don't have an account?
-                <!-- <TextLink :href="route('register')" :tabindex="5">Sign up</TextLink> -->
+                <TextLink :to="{ name: 'dashboard.register' }">Sign up</TextLink>
             </div>
         </form>
     </AuthBase>

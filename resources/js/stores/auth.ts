@@ -44,7 +44,7 @@ export const useAuthStore = defineStore('auth', {
         password: password,
         remember: remember,
       }).then((response) => {
-        this.user = response.data.data;
+        this.user = response.data;
       }).catch((error) => {
         // ToDo: Handle error...
       });
