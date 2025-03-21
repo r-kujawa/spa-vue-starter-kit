@@ -3,20 +3,19 @@ import NavFooter from '@/components/NavFooter.vue';
 import NavMain from '@/components/NavMain.vue';
 import NavUser from '@/components/NavUser.vue';
 import { Sidebar, SidebarContent, SidebarFooter, SidebarHeader, SidebarMenu, SidebarMenuButton, SidebarMenuItem } from '@/components/ui/sidebar';
-import { type NavItem } from '@/types';
-import { Link } from '@inertiajs/vue3';
+import { type NavItemWithHref, type NavItemWithTo } from '@/types';
 import { BookOpen, Folder, LayoutGrid } from 'lucide-vue-next';
 import AppLogo from './AppLogo.vue';
 
-const mainNavItems: NavItem[] = [
+const mainNavItems: NavItemWithTo[] = [
     {
         title: 'Dashboard',
-        href: '/dashboard',
+        to: '/dashboard',
         icon: LayoutGrid,
     },
 ];
 
-const footerNavItems: NavItem[] = [
+const footerNavItems: NavItemWithHref[] = [
     {
         title: 'Github Repo',
         href: 'https://github.com/laravel/vue-starter-kit',
@@ -36,9 +35,9 @@ const footerNavItems: NavItem[] = [
             <SidebarMenu>
                 <SidebarMenuItem>
                     <SidebarMenuButton size="lg" as-child>
-                        <Link :href="route('dashboard')">
+                        <RouterLink :to="{ name: 'dashboard' }">
                             <AppLogo />
-                        </Link>
+                        </RouterLink>
                     </SidebarMenuButton>
                 </SidebarMenuItem>
             </SidebarMenu>

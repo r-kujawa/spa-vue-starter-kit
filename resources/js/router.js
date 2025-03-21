@@ -60,10 +60,10 @@ router.beforeEach(async (to, from) => {
         await auth.initiate();
     }
 
-    if (auth.isGuest && !guestRoutes.includes(to.name) && !openRoutes.includes(to.name)) {
+    if (!auth.isAuthenticated && !guestRoutes.includes(to.name) && !openRoutes.includes(to.name)) {
         auth.setIntendedRoute(to);
 
-        return { name: 'login' };
+        return { name: 'dashboard.login' };
     }
 
     if (auth.isAuthenticated && guestRoutes.includes(to.name)) {

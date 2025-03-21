@@ -1,9 +1,9 @@
 <script setup lang="ts">
 import { SidebarGroup, SidebarGroupContent, SidebarMenu, SidebarMenuButton, SidebarMenuItem } from '@/components/ui/sidebar';
-import { type NavItem } from '@/types';
+import { type NavItemWithHref } from '@/types';
 
 interface Props {
-    items: NavItem[];
+    items: NavItemWithHref[];
     class?: string;
 }
 

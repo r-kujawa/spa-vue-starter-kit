@@ -1,23 +1,13 @@
 import { defineStore } from 'pinia';
 import http from '../http';
-import { useRouter } from 'vue-router';
-
-interface User {
-    id: number;
-    name: string;
-    email: string;
-    emailVerifiedAt: string;
-    createdAt: string;
-    updatedAt: string;
-}
+import router from '../router';
+import { User } from '@/types';
 
 interface AuthState {
     initiated: boolean;
     intendedRoute: object;
     user: User | null;
 }
-
-const router = useRouter();
 
 export const useAuthStore = defineStore('auth', {
   state: (): AuthState => {
@@ -62,9 +52,11 @@ export const useAuthStore = defineStore('auth', {
       });
     },
     logout() {
-      return http.post('dashboard/logout')
+      return http.post(route('logout'))
         .then((response) => {
             this.user = null;
+
+            router.push({ name: 'welcome' });
         }).catch((error) => {
             // ToDo: Handle error...
         });
