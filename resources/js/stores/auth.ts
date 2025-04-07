@@ -34,7 +34,7 @@ export const useAuthStore = defineStore('auth', {
       });
     },
     setIntendedRoute(route: object) {
-        this.intendedRoute = route;
+      this.intendedRoute = route;
     },
     login(email: string, password: string, remember: boolean = false) {
       return http.post(route('dashboard.login'), {
@@ -54,11 +54,11 @@ export const useAuthStore = defineStore('auth', {
     logout() {
       return http.post(route('logout'))
         .then((response) => {
-            this.user = null;
+          this.user = null;
 
-            router.push({ name: 'welcome' });
+          router.push({ name: 'welcome' });
         }).catch((error) => {
-            // ToDo: Handle error...
+          // ToDo: Handle error...
         });
     },
     sendResetPasswordLink(email: string) {
@@ -81,6 +81,18 @@ export const useAuthStore = defineStore('auth', {
       }).catch((error) => {
         // ToDo: Handle error...
       });
+    },
+    register(data: object) {
+      return http.post(route('dashboard.register'), data)
+        .then((response) => {
+          this.user = response.data.user;
+
+          router.push(this.intendedRoute);
+
+          this.intendedRoute = { name: 'dashboard' };
+        }).catch((error) => {
+            // ToDo: Handle error...
+        });
     },
   },
 });
