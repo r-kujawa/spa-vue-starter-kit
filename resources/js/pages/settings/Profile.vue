@@ -45,7 +45,7 @@ const submit = () => {
 
             setTimeout(() => {
                 saved.value = false;
-            }, 5000);
+            }, 3000);
         })
         .finally(() => processing.value = false);
 };
