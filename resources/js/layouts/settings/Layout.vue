@@ -2,27 +2,24 @@
 import Heading from '@/components/Heading.vue';
 import { Button } from '@/components/ui/button';
 import { Separator } from '@/components/ui/separator';
-import { type NavItem } from '@/types';
-import { Link, usePage } from '@inertiajs/vue3';
+import { isActiveRoute } from '@/composables/useCurrentRoute';
+import { type NavItemWithTo } from '@/types';
+import { RouterLink } from 'vue-router';
 
-const sidebarNavItems: NavItem[] = [
+const sidebarNavItems: NavItemWithTo[] = [
     {
         title: 'Profile',
-        href: '/settings/profile',
+        to: { name: 'dashboard.settings.profile' },
     },
     {
         title: 'Password',
-        href: '/settings/password',
+        to: { name: 'dashboard.settings.password' },
     },
     {
         title: 'Appearance',
-        href: '/settings/appearance',
+        to: { name: 'dashboard.settings.appearance' },
     },
 ];
-
-const page = usePage();
-
-const currentPath = page.props.ziggy?.location ? new URL(page.props.ziggy.location).pathname : '';
 </script>
 
 <template>
@@ -36,12 +33,12 @@ const currentPath = page.props.ziggy?.location ? new URL(page.props.ziggy.locati
                         v-for="item in sidebarNavItems"
                         :key="item.href"
                         variant="ghost"
-                        :class="['w-full justify-start', { 'bg-muted': currentPath === item.href }]"
+                        :class="['w-full justify-start', { 'bg-muted': isActiveRoute(item) }]"
                         as-child
                     >
-                        <Link :href="item.href">
+                        <RouterLink :to="item.to">
                             {{ item.title }}
-                        </Link>
+                        </RouterLink>
                     </Button>
                 </nav>
             </aside>

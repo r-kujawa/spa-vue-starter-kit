@@ -1,6 +1,4 @@
 <script setup lang="ts">
-import { Head, Link, useForm, usePage } from '@inertiajs/vue3';
-
 import DeleteUser from '@/components/DeleteUser.vue';
 import HeadingSmall from '@/components/HeadingSmall.vue';
 import InputError from '@/components/InputError.vue';
@@ -9,14 +7,17 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import AppLayout from '@/layouts/AppLayout.vue';
 import SettingsLayout from '@/layouts/settings/Layout.vue';
-import { type BreadcrumbItem, type SharedData, type User } from '@/types';
+import { type BreadcrumbItem, type User } from '@/types';
+import { ref } from 'vue';
+import { useAuthStore } from '@/stores/auth';
+import http from '@/http';
 
-interface Props {
-    mustVerifyEmail: boolean;
-    status?: string;
-}
+// interface Props {
+//     mustVerifyEmail: boolean;
+//     status?: string;
+// }
 
-defineProps<Props>();
+// defineProps<Props>();
 
 const breadcrumbs: BreadcrumbItem[] = [
     {
@@ -25,25 +26,33 @@ const breadcrumbs: BreadcrumbItem[] = [
     },
 ];
 
-const page = usePage<SharedData>();
-const user = page.props.auth.user as User;
+const auth = useAuthStore();
+const user = auth.user as User;
 
-const form = useForm({
+const form = ref({
     name: user.name,
     email: user.email,
 });
 
+const processing = ref(false);
+const saved = ref(false);
 const submit = () => {
-    form.patch(route('profile.update'), {
-        preserveScroll: true,
-    });
+    processing.value = true;
+
+    http.patch(route('profile.update'), form.value)
+        .then(() => {
+            saved.value = true;
+
+            setTimeout(() => {
+                saved.value = false;
+            }, 5000);
+        })
+        .finally(() => processing.value = false);
 };
 </script>
 
 <template>
     <AppLayout :breadcrumbs="breadcrumbs">
-        <Head title="Profile settings" />
-
         <SettingsLayout>
             <div class="flex flex-col space-y-6">
                 <HeadingSmall title="Profile information" description="Update your name and email address" />
@@ -52,7 +61,7 @@ const submit = () => {
                     <div class="grid gap-2">
                         <Label for="name">Name</Label>
                         <Input id="name" class="mt-1 block w-full" v-model="form.name" required autocomplete="name" placeholder="Full name" />
-                        <InputError class="mt-2" :message="form.errors.name" />
+                        <!-- <InputError class="mt-2" :message="form.errors.name" /> -->
                     </div>
 
                     <div class="grid gap-2">
@@ -66,10 +75,10 @@ const submit = () => {
                             autocomplete="username"
                             placeholder="Email address"
                         />
-                        <InputError class="mt-2" :message="form.errors.email" />
+                        <!-- <InputError class="mt-2" :message="form.errors.email" /> -->
                     </div>
 
-                    <div v-if="mustVerifyEmail && !user.email_verified_at">
+                    <!-- <div v-if="mustVerifyEmail && !user.email_verified_at">
                         <p class="-mt-4 text-sm text-muted-foreground">
                             Your email address is unverified.
                             <Link
@@ -85,10 +94,10 @@ const submit = () => {
                         <div v-if="status === 'verification-link-sent'" class="mt-2 text-sm font-medium text-green-600">
                             A new verification link has been sent to your email address.
                         </div>
-                    </div>
+                    </div> -->
 
                     <div class="flex items-center gap-4">
-                        <Button :disabled="form.processing">Save</Button>
+                        <Button :disabled="processing">Save</Button>
 
                         <Transition
                             enter-active-class="transition ease-in-out"
@@ -96,7 +105,7 @@ const submit = () => {
                             leave-active-class="transition ease-in-out"
                             leave-to-class="opacity-0"
                         >
-                            <p v-show="form.recentlySuccessful" class="text-sm text-neutral-600">Saved.</p>
+                            <p v-show="saved" class="text-sm text-neutral-600">Saved.</p>
                         </Transition>
                     </div>
                 </form>

@@ -2,6 +2,9 @@ import { createRouter, createWebHistory } from 'vue-router';
 import Login from './pages/auth/Login.vue';
 import Register from './pages/auth/Register.vue';
 import Dashboard from './pages/Dashboard.vue';
+import Appearance from './pages/settings/Appearance.vue';
+import Password from './pages/settings/Password.vue';
+import Profile from './pages/settings/Profile.vue';
 import Welcome from './pages/Welcome.vue';
 import { useAuthStore } from './stores/auth';
 
@@ -39,6 +42,35 @@ const routes = [
                 meta: {
                     title: 'Register',
                 },
+            },
+            {
+                path: '/settings',
+                children: [
+                    {
+                        path: '/profile',
+                        name: 'dashboard.settings.profile',
+                        component: Profile,
+                        meta: {
+                            title: 'Profile settings',
+                        },
+                    },
+                    {
+                        path: '/appearance',
+                        name: 'dashboard.settings.appearance',
+                        component: Appearance,
+                        meta: {
+                            title: 'Appearance settings',
+                        },
+                    },
+                    {
+                        path: '/password',
+                        name: 'dashboard.settings.password',
+                        component: Password,
+                        meta: {
+                            title: 'Password settings',
+                        },
+                    },
+                ],
             },
         ],
     },

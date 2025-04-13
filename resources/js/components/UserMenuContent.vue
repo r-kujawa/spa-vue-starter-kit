@@ -27,10 +27,10 @@ const logout = async () => {
     <DropdownMenuSeparator />
     <DropdownMenuGroup>
         <DropdownMenuItem :as-child="true">
-            <!-- <Link class="block w-full" :href="route('profile.edit')" as="button">
+            <RouterLink class="block w-full" :to="{ name: 'dashboard.settings.profile' }" as="button">
                 <Settings class="mr-2 h-4 w-4" />
                 Settings
-            </Link> -->
+            </RouterLink>
         </DropdownMenuItem>
     </DropdownMenuGroup>
     <DropdownMenuSeparator />
