@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import { useForm } from '@inertiajs/vue3';
 import { ref } from 'vue';
 
 // Components
@@ -18,27 +17,38 @@ import {
 } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import http from '@/http';
+import { useRouter } from 'vue-router';
+
+const router = useRouter();
 
 const passwordInput = ref<HTMLInputElement | null>(null);
 
-const form = useForm({
+const form = ref({
     password: '',
 });
+
+const processing = ref(false);
 
 const deleteUser = (e: Event) => {
     e.preventDefault();
 
-    form.delete(route('profile.destroy'), {
-        preserveScroll: true,
-        onSuccess: () => closeModal(),
-        onError: () => passwordInput.value?.focus(),
-        onFinish: () => form.reset(),
-    });
+    processing.value = true;
+
+    http.delete(route('profile.destroy'), {
+        data: {
+            password: form.value.password,
+        }
+    })
+        .then((response) => router.push('/'))
+        .catch((error) => {
+            // ToDo: Focus password input if 422.
+        })
+        .finally(() => processing.value = false);
 };
 
 const closeModal = () => {
-    form.clearErrors();
-    form.reset();
+    form.value.password = '';
 };
 </script>
 
@@ -67,7 +77,7 @@ const closeModal = () => {
                         <div class="grid gap-2">
                             <Label for="password" class="sr-only">Password</Label>
                             <Input id="password" type="password" name="password" ref="passwordInput" v-model="form.password" placeholder="Password" />
-                            <InputError :message="form.errors.password" />
+                            <!-- <InputError :message="form.errors.password" /> -->
                         </div>
 
                         <DialogFooter class="gap-2">
@@ -75,7 +85,7 @@ const closeModal = () => {
                                 <Button variant="secondary" @click="closeModal"> Cancel </Button>
                             </DialogClose>
 
-                            <Button variant="destructive" :disabled="form.processing">
+                            <Button variant="destructive" :disabled="processing">
                                 <button type="submit">Delete account</button>
                             </Button>
                         </DialogFooter>

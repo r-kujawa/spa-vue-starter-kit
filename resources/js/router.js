@@ -105,4 +105,6 @@ router.beforeEach(async (to, from) => {
     document.title = to.meta?.title ? to.meta.title + ' - ' + appName : appName;
 });
 
+// ToDo: Redirect to login if 401 error is returned from the server (afterEach).
+
 export default router;
