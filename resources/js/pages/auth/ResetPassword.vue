@@ -3,43 +3,50 @@ import InputError from '@/components/InputError.vue';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import http from '@/http';
 import AuthLayout from '@/layouts/AuthLayout.vue';
-import { Head, useForm } from '@inertiajs/vue3';
 import { LoaderCircle } from 'lucide-vue-next';
+import { ref } from 'vue';
+import { useRoute, useRouter } from 'vue-router';
 
 interface Props {
     token: string;
-    email: string;
 }
 
 const props = defineProps<Props>();
 
-const form = useForm({
+const vueRoute = useRoute();
+
+const form = ref({
     token: props.token,
-    email: props.email,
+    email: vueRoute.query.email ?? '',
     password: '',
     password_confirmation: '',
 });
 
+const processing = ref(false);
+const router = useRouter();
+
 const submit = () => {
-    form.post(route('password.store'), {
-        onFinish: () => {
-            form.reset('password', 'password_confirmation');
-        },
-    });
+    processing.value = true;
+
+    http.post(route('password.store'), form.value)
+        .then((response) => {
+            router.push({ name: 'dashboard.login' });
+        }).finally(() => {
+            processing.value = false;
+        });
 };
 </script>
 
 <template>
     <AuthLayout title="Reset password" description="Please enter your new password below">
-        <Head title="Reset password" />
-
         <form @submit.prevent="submit">
             <div class="grid gap-6">
                 <div class="grid gap-2">
                     <Label for="email">Email</Label>
                     <Input id="email" type="email" name="email" autocomplete="email" v-model="form.email" class="mt-1 block w-full" readonly />
-                    <InputError :message="form.errors.email" class="mt-2" />
+                    <!-- <InputError :message="form.errors.email" class="mt-2" /> -->
                 </div>
 
                 <div class="grid gap-2">
@@ -54,7 +61,7 @@ const submit = () => {
                         autofocus
                         placeholder="Password"
                     />
-                    <InputError :message="form.errors.password" />
+                    <!-- <InputError :message="form.errors.password" /> -->
                 </div>
 
                 <div class="grid gap-2">
@@ -68,11 +75,11 @@ const submit = () => {
                         class="mt-1 block w-full"
                         placeholder="Confirm password"
                     />
-                    <InputError :message="form.errors.password_confirmation" />
+                    <!-- <InputError :message="form.errors.password_confirmation" /> -->
                 </div>
 
-                <Button type="submit" class="mt-4 w-full" :disabled="form.processing">
-                    <LoaderCircle v-if="form.processing" class="h-4 w-4 animate-spin" />
+                <Button type="submit" class="mt-4 w-full" :disabled="processing">
+                    <LoaderCircle v-if="processing" class="h-4 w-4 animate-spin" />
                     Reset password
                 </Button>
             </div>

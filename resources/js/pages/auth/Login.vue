@@ -45,9 +45,9 @@ const submit = () => {
                 <div class="grid gap-2">
                     <div class="flex items-center justify-between">
                         <Label for="password">Password</Label>
-                        <!-- <TextLink :to="{ name: 'dashboard.resetPassword' }" class="text-sm">
+                        <TextLink :to="{ name: 'dashboard.forgotPassword' }" class="text-sm">
                             Forgot password?
-                        </TextLink> -->
+                        </TextLink>
                     </div>
                     <Input
                         id="password"

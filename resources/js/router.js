@@ -1,6 +1,8 @@
 import { createRouter, createWebHistory } from 'vue-router';
+import ForgotPassword from './pages/auth/ForgotPassword.vue';
 import Login from './pages/auth/Login.vue';
 import Register from './pages/auth/Register.vue';
+import ResetPassword from './pages/auth/ResetPassword.vue';
 import Dashboard from './pages/Dashboard.vue';
 import Appearance from './pages/settings/Appearance.vue';
 import Password from './pages/settings/Password.vue';
@@ -31,12 +33,15 @@ const routes = [
                 },
             },
             {
-                path: '/login',
+                path: 'login',
                 name: 'dashboard.login',
                 component: Login,
+                meta: {
+                    title: 'Login',
+                },
             },
             {
-                path: '/register',
+                path: 'register',
                 name: 'dashboard.register',
                 component: Register,
                 meta: {
@@ -44,10 +49,27 @@ const routes = [
                 },
             },
             {
-                path: '/settings',
+                path: 'forgot-password',
+                name: 'dashboard.forgotPassword',
+                component: ForgotPassword,
+                meta: {
+                    title: 'Forgot password',
+                },
+            },
+            {
+                path: 'reset-password/:token',
+                name: 'dashboard.resetPassword',
+                component: ResetPassword,
+                props: true,
+                meta: {
+                    title: 'Reset password',
+                },
+            },
+            {
+                path: 'settings',
                 children: [
                     {
-                        path: '/profile',
+                        path: 'profile',
                         name: 'dashboard.settings.profile',
                         component: Profile,
                         meta: {
@@ -55,7 +77,7 @@ const routes = [
                         },
                     },
                     {
-                        path: '/appearance',
+                        path: 'appearance',
                         name: 'dashboard.settings.appearance',
                         component: Appearance,
                         meta: {
@@ -63,7 +85,7 @@ const routes = [
                         },
                     },
                     {
-                        path: '/password',
+                        path: 'password',
                         name: 'dashboard.settings.password',
                         component: Password,
                         meta: {
@@ -83,7 +105,7 @@ const router = createRouter({
 
 const openRoutes = ['welcome'];
 
-const guestRoutes = ['dashboard.register', 'dashboard.login'];
+const guestRoutes = ['dashboard.register', 'dashboard.login', 'dashboard.forgotPassword', 'dashboard.resetPassword'];
 
 router.beforeEach(async (to, from) => {
     const auth = useAuthStore();
