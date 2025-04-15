@@ -3,6 +3,7 @@ import ForgotPassword from './pages/auth/ForgotPassword.vue';
 import Login from './pages/auth/Login.vue';
 import Register from './pages/auth/Register.vue';
 import ResetPassword from './pages/auth/ResetPassword.vue';
+import VerifyEmail from './pages/auth/VerifyEmail.vue';
 import Dashboard from './pages/Dashboard.vue';
 import Appearance from './pages/settings/Appearance.vue';
 import Password from './pages/settings/Password.vue';
@@ -46,6 +47,14 @@ const routes = [
                 component: Register,
                 meta: {
                     title: 'Register',
+                },
+            },
+            {
+                path: 'verify-email',
+                name: 'dashboard.verifyEmail',
+                component: VerifyEmail,
+                meta: {
+                    title: 'Email verification',
                 },
             },
             {
