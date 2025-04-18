@@ -81,9 +81,6 @@ export function useAppearance() {
         // Store in localStorage for client-side persistence...
         localStorage.setItem('appearance', value);
 
-        // Store in cookie for SSR...
-        setCookie('appearance', value);
-
         updateTheme(value);
     }
 
