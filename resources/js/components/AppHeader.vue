@@ -15,11 +15,13 @@ import {
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from '@/components/ui/sheet';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import UserMenuContent from '@/components/UserMenuContent.vue';
+import { isActiveRoute } from '@/composables/useCurrentRoute';
 import { getInitials } from '@/composables/useInitials';
-import type { BreadcrumbItem, NavItem } from '@/types';
-import { Link, usePage } from '@inertiajs/vue3';
+import { useAuthStore } from '@/stores/auth';
+import type { BreadcrumbItem, NavItemWithHref, NavItemWithTo } from '@/types';
 import { BookOpen, Folder, LayoutGrid, Menu, Search } from 'lucide-vue-next';
 import { computed } from 'vue';
+import { RouterLink } from 'vue-router';
 
 interface Props {
     breadcrumbs?: BreadcrumbItem[];
@@ -29,24 +31,21 @@ const props = withDefaults(defineProps<Props>(), {
     breadcrumbs: () => [],
 });
 
-const page = usePage();
-const auth = computed(() => page.props.auth);
-
-const isCurrentRoute = computed(() => (url: string) => page.url === url);
+const auth = useAuthStore();
 
 const activeItemStyles = computed(
-    () => (url: string) => (isCurrentRoute.value(url) ? 'text-neutral-900 dark:bg-neutral-800 dark:text-neutral-100' : ''),
+    () => (item: NavItemWithTo) => (isActiveRoute(item) ? 'text-neutral-900 dark:bg-neutral-800 dark:text-neutral-100' : ''),
 );
 
-const mainNavItems: NavItem[] = [
+const mainNavItems: NavItemWithTo[] = [
     {
         title: 'Dashboard',
-        href: '/dashboard',
+        to: { name: 'dashboard' },
         icon: LayoutGrid,
     },
 ];
 
-const rightNavItems: NavItem[] = [
+const rightNavItems: NavItemWithHref[] = [
     {
         title: 'Repository',
         href: 'https://github.com/laravel/vue-starter-kit',
@@ -79,16 +78,16 @@ const rightNavItems: NavItem[] = [
                             </SheetHeader>
                             <div class="flex h-full flex-1 flex-col justify-between space-y-4 py-6">
                                 <nav class="-mx-3 space-y-1">
-                                    <Link
+                                    <RouterLink
                                         v-for="item in mainNavItems"
                                         :key="item.title"
-                                        :href="item.href"
+                                        :to="item.to"
                                         class="flex items-center gap-x-3 rounded-lg px-3 py-2 text-sm font-medium hover:bg-accent"
-                                        :class="activeItemStyles(item.href)"
+                                        :class="activeItemStyles(item)"
                                     >
                                         <component v-if="item.icon" :is="item.icon" class="h-5 w-5" />
                                         {{ item.title }}
-                                    </Link>
+                                    </RouterLink>
                                 </nav>
                                 <div class="flex flex-col space-y-4">
                                     <a
@@ -108,25 +107,25 @@ const rightNavItems: NavItem[] = [
                     </Sheet>
                 </div>
 
-                <Link :href="route('dashboard')" class="flex items-center gap-x-2">
+                <RouterLink :to="{ name: 'dashboard' }" class="flex items-center gap-x-2">
                     <AppLogo />
-                </Link>
+                </RouterLink>
 
                 <!-- Desktop Menu -->
                 <div class="hidden h-full lg:flex lg:flex-1">
                     <NavigationMenu class="ml-10 flex h-full items-stretch">
                         <NavigationMenuList class="flex h-full items-stretch space-x-2">
                             <NavigationMenuItem v-for="(item, index) in mainNavItems" :key="index" class="relative flex h-full items-center">
-                                <Link :href="item.href">
+                                <RouterLink :to="item.to">
                                     <NavigationMenuLink
-                                        :class="[navigationMenuTriggerStyle(), activeItemStyles(item.href), 'h-9 cursor-pointer px-3']"
+                                        :class="[navigationMenuTriggerStyle(), activeItemStyles(item), 'h-9 cursor-pointer px-3']"
                                     >
                                         <component v-if="item.icon" :is="item.icon" class="mr-2 h-4 w-4" />
                                         {{ item.title }}
                                     </NavigationMenuLink>
-                                </Link>
+                                </RouterLink>
                                 <div
-                                    v-if="isCurrentRoute(item.href)"
+                                    v-if="isActiveRoute(item)"
                                     class="absolute bottom-0 left-0 h-0.5 w-full translate-y-px bg-black dark:bg-white"
                                 ></div>
                             </NavigationMenuItem>
@@ -169,7 +168,7 @@ const rightNavItems: NavItem[] = [
                                 class="relative size-10 w-auto rounded-full p-1 focus-within:ring-2 focus-within:ring-primary"
                             >
                                 <Avatar class="size-8 overflow-hidden rounded-full">
-                                    <AvatarImage v-if="auth.user.avatar" :src="auth.user.avatar" :alt="auth.user.name" />
+                                    <AvatarImage v-if="auth.user?.avatar" :src="auth.user?.avatar" :alt="auth.user?.name" />
                                     <AvatarFallback class="rounded-lg bg-neutral-200 font-semibold text-black dark:bg-neutral-700 dark:text-white">
                                         {{ getInitials(auth.user?.name) }}
                                     </AvatarFallback>
