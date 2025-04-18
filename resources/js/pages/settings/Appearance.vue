@@ -8,8 +8,16 @@ import SettingsLayout from '@/layouts/settings/Layout.vue';
 
 const breadcrumbItems: BreadcrumbItem[] = [
     {
+        title: 'Dashboard',
+        to: { name: 'dashboard' },
+    },
+    {
+        title: 'Profile settings',
+        to: { name: 'dashboard.settings.profile' },
+    },
+    {
         title: 'Appearance settings',
-        href: '/settings/appearance',
+        to: { name: 'dashboard.settings.appearance' },
     },
 ];
 </script>

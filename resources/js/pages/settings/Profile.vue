@@ -12,17 +12,14 @@ import { ref } from 'vue';
 import { useAuthStore } from '@/stores/auth';
 import http from '@/http';
 
-// interface Props {
-//     mustVerifyEmail: boolean;
-//     status?: string;
-// }
-
-// defineProps<Props>();
-
 const breadcrumbs: BreadcrumbItem[] = [
     {
+        title: 'Dashboard',
+        to: { name: 'dashboard' },
+    },
+    {
         title: 'Profile settings',
-        href: '/settings/profile',
+        to: { name: 'dashboard.settings.profile' },
     },
 ];
 

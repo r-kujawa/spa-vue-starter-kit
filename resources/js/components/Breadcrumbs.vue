@@ -1,14 +1,10 @@
 <script setup lang="ts">
 import { Breadcrumb, BreadcrumbItem, BreadcrumbLink, BreadcrumbList, BreadcrumbPage, BreadcrumbSeparator } from '@/components/ui/breadcrumb';
-import { Link } from '@inertiajs/vue3';
-
-interface BreadcrumbItem {
-    title: string;
-    href?: string;
-}
+import type { BreadcrumbItem as BreadcrumbItemType } from '@/types';
+import { RouterLink } from 'vue-router';
 
 defineProps<{
-    breadcrumbs: BreadcrumbItem[];
+    breadcrumbs: BreadcrumbItemType[];
 }>();
 </script>
 
@@ -22,7 +18,7 @@ defineProps<{
                     </template>
                     <template v-else>
                         <BreadcrumbLink as-child>
-                            <Link :href="item.href ?? '#'">{{ item.title }}</Link>
+                            <RouterLink :to="item.to">{{ item.title }}</RouterLink>
                         </BreadcrumbLink>
                     </template>
                 </BreadcrumbItem>

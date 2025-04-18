@@ -8,7 +8,7 @@ export interface Auth {
 
 export interface BreadcrumbItem {
     title: string;
-    href: string;
+    to: RouteTo;
 }
 
 export interface NavItemBase {

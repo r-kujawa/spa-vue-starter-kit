@@ -12,8 +12,16 @@ import http from '@/http';
 
 const breadcrumbItems: BreadcrumbItem[] = [
     {
+        title: 'Dashboard',
+        to: { name: 'dashboard' },
+    },
+    {
+        title: 'Profile settings',
+        to: { name: 'dashboard.settings.profile' },
+    },
+    {
         title: 'Password settings',
-        href: '/settings/password',
+        to: { name: 'dashboard.settings.password' },
     },
 ];
 
