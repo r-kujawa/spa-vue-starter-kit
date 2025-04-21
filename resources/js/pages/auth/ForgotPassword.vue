@@ -1,29 +1,24 @@
-<script setup lang="ts">
+<script setup>
 import InputError from '@/components/InputError.vue';
 import TextLink from '@/components/TextLink.vue';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import http from '@/http';
 import AuthLayout from '@/layouts/AuthLayout.vue';
 import { LoaderCircle } from 'lucide-vue-next';
 import { ref } from 'vue';
+import useForm from 'formul8';
 
-const form = ref({
+const form = useForm({
     email: '',
 });
 
 const status = ref(null);
-const processing = ref(false);
 
 const submit = () => {
-    processing.value = true;
-
-    http.post(route('password.email'), form.value)
+    form.submit('post', route('password.email'))
         .then((response) => {
             status.value = response.data.status;
-        }).finally(() => {
-            processing.value = false;
         });
 };
 </script>
@@ -38,13 +33,13 @@ const submit = () => {
             <form @submit.prevent="submit">
                 <div class="grid gap-2">
                     <Label for="email">Email address</Label>
-                    <Input id="email" type="email" name="email" autocomplete="off" v-model="form.email" autofocus placeholder="email@example.com" />
-                    <!-- <InputError :message="form.errors.email" /> -->
+                    <Input type="email" id="email" name="email" autocomplete="off" v-model="form.email" autofocus placeholder="email@example.com" />
+                    <InputError :message="form.errors.email" />
                 </div>
 
                 <div class="my-6 flex items-center justify-start">
-                    <Button class="w-full" :disabled="processing">
-                        <LoaderCircle v-if="processing" class="h-4 w-4 animate-spin" />
+                    <Button class="w-full" :disabled="form.processing">
+                        <LoaderCircle v-if="form.processing" class="h-4 w-4 animate-spin" />
                         Email password reset link
                     </Button>
                 </div>
