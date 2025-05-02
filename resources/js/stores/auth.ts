@@ -33,6 +33,10 @@ export const useAuthStore = defineStore('auth', {
         this.initiated = true;
       });
     },
+    reset() {
+      this.user = null;
+      this.intendedRoute = { name: 'dashboard' };
+    },
     setIntendedRoute(route: object) {
       this.intendedRoute = route;
     },

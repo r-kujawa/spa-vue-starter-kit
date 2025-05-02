@@ -5,6 +5,7 @@ import { ref } from 'vue';
 import HeadingSmall from '@/components/HeadingSmall.vue';
 import InputError from '@/components/InputError.vue';
 import { Button } from '@/components/ui/button';
+import useForm from 'formul8';
 import {
     Dialog,
     DialogClose,
@@ -17,34 +18,29 @@ import {
 } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import http from '@/http';
 import { useRouter } from 'vue-router';
+import { useAuthStore } from '@/stores/auth';
 
 const router = useRouter();
+const auth = useAuthStore();
 
 const passwordInput = ref<HTMLInputElement | null>(null);
 
-const form = ref({
+const form = useForm({
     password: '',
 });
-
-const processing = ref(false);
 
 const deleteUser = (e: Event) => {
     e.preventDefault();
 
-    processing.value = true;
-
-    http.delete(route('profile.destroy'), {
-        data: {
-            password: form.value.password,
-        }
-    })
-        .then((response) => router.push('/'))
+    form.delete(route('profile.destroy'))
+        .then((response) => {
+            auth.reset();
+            router.push({ name: 'welcome' });
+        })
         .catch((error) => {
             // ToDo: Focus password input if 422.
-        })
-        .finally(() => processing.value = false);
+        });
 };
 
 const closeModal = () => {
@@ -77,7 +73,7 @@ const closeModal = () => {
                         <div class="grid gap-2">
                             <Label for="password" class="sr-only">Password</Label>
                             <Input id="password" type="password" name="password" ref="passwordInput" v-model="form.password" placeholder="Password" />
-                            <!-- <InputError :message="form.errors.password" /> -->
+                            <InputError :message="form.errors.password" />
                         </div>
 
                         <DialogFooter class="gap-2">
@@ -85,7 +81,7 @@ const closeModal = () => {
                                 <Button variant="secondary" @click="closeModal"> Cancel </Button>
                             </DialogClose>
 
-                            <Button variant="destructive" :disabled="processing">
+                            <Button variant="destructive" :disabled="form.processing">
                                 <button type="submit">Delete account</button>
                             </Button>
                         </DialogFooter>
